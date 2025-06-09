@@ -9,7 +9,23 @@ with open("latest_file.txt", "r") as f:
 # 上傳至 MEGA
 mega = Mega()
 m = mega.login(os.getenv("MEGA_EMAIL"), os.getenv("MEGA_PASSWORD"))
-file = m.upload(filename)
+
+# Step 2: Traverse or create folder path: "CB_Database/Weekly_Circulate"
+def get_or_create_folder(path):
+    parts = path.strip("/").split("/")
+    parent = None
+    for part in parts:
+        node = m.find(part, parent)
+        if node is None:
+            node = m.create_folder(part, parent)
+        parent = node
+    return parent
+
+# Use this path
+dest_folder = get_or_create_folder("CB_Database/Weekly_Circulate")
+
+# Step 3: Upload the file into the target folder
+file = m.upload(filename, dest=dest_folder)
 link = m.get_upload_link(file)
 
 # 寫入 input.txt 做追蹤

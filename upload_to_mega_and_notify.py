@@ -13,22 +13,26 @@ m = mega.login(os.getenv("MEGA_EMAIL"), os.getenv("MEGA_PASSWORD"))
 # Step 2: Traverse or create folder path: "CB_Database/Weekly_Circulate"
 def get_or_create_folder(path):
     parts = path.strip("/").split("/")
+    nodes = m.get_files()
     parent = None
+
     for part in parts:
-        # Search for folder under current parent
-        nodes = m.get_files()
         folder_node = None
+
         for node in nodes.values():
-            if node['t'] == 1 and node['a']['n'] == part:  # t==1 is folder
-                if parent is None and node['p'] == 'root':
+            if node["t"] == 1 and node["a"]["n"] == part:
+                if parent is None and node["p"] == m.root_id:
                     folder_node = node
                     break
-                elif parent is not None and node['p'] == parent['h']:
+                elif parent is not None and "h" in parent and node["p"] == parent["h"]:
                     folder_node = node
                     break
+
         if folder_node is None:
-            folder_node = m.create_folder(part, parent['h'] if parent else None)
+            folder_node = m.create_folder(part, parent["h"] if parent else None)
+
         parent = folder_node
+
     return parent
 
 # Use this path

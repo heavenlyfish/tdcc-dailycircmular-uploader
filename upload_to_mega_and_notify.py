@@ -39,7 +39,7 @@ def get_or_create_folder(path):
 dest_folder = get_or_create_folder("CB_Database/Weekly_Circulate")
 
 # Step 3: Upload the file into the target folder
-file = m.upload(filename, dest=dest_folder)
+file = m.upload(filename, dest=dest_folder["h"])
 link = m.get_upload_link(file)
 
 # 寫入 input.txt 做追蹤

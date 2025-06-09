@@ -15,10 +15,20 @@ def get_or_create_folder(path):
     parts = path.strip("/").split("/")
     parent = None
     for part in parts:
-        node = m.find(part, parent)
-        if node is None:
-            node = m.create_folder(part, parent)
-        parent = node
+        # Search for folder under current parent
+        nodes = m.get_files()
+        folder_node = None
+        for node in nodes.values():
+            if node['t'] == 1 and node['a']['n'] == part:  # t==1 is folder
+                if parent is None and node['p'] == 'root':
+                    folder_node = node
+                    break
+                elif parent is not None and node['p'] == parent['h']:
+                    folder_node = node
+                    break
+        if folder_node is None:
+            folder_node = m.create_folder(part, parent['h'] if parent else None)
+        parent = folder_node
     return parent
 
 # Use this path

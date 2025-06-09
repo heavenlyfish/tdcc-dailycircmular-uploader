@@ -1,0 +1,33 @@
+name: Weekly TDCC Upload to MEGA
+
+on:
+  schedule:
+    - cron: '0 14 * * 5'  # Every Friday 10PM Taipei (14:00 UTC)
+  workflow_dispatch:
+
+jobs:
+  run-tasks:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.10
+
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
+    - name: Fetch TDCC data
+      run: python tdcc_fetch_and_save.py
+
+    - name: Upload to MEGA and notify Telegram
+      env:
+        MEGA_EMAIL: ${{ secrets.MEGA_EMAIL }}
+        MEGA_PASSWORD: ${{ secrets.MEGA_PASSWORD }}
+        TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+        TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      run: python upload_to_mega_and_notify.py
